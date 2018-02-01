@@ -11,17 +11,43 @@ var server = http.createServer(app);
 var io = socketIO(server);
 
 io.on('connection', (socket) => {
-    console.log('New User Connected');
+    
+    // console.log('New User Connected');
   
+    // On connection want to send a welcome message to the owner of the socket 
+
+    socket.emit('newMessage', {
+        from: 'Admin', 
+        text: 'Welcome to the Chat Room', 
+        createdAt: new Date().getTime()
+    });
+
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin', 
+        text: 'New User joined the room', 
+        createdAt: new Date().getTime()
+    });
+
     // Handle a new message - basically we want to forward it onto all users...
 
     socket.on('createMessage', (message) => {
-        console.log('Hi - new message received: ', message);
+
+        // Send a message to everyone.
+
         io.emit('newMessage', {
             from: message.from,
             text: message.text,
             createdAt: new Date().getTime()
         });
+
+        // Broadcast example below - this will go to all users apart from the one related to this socket. 
+
+        // socket.broadcast.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // });
+
     });
 
     // Handle the disconnection.
