@@ -12,27 +12,19 @@ var io = socketIO(server);
 
 io.on('connection', (socket) => {
     console.log('New User Connected');
-
-    // socket.emit('newEmail', {
-    //     from: 'markdsmi@uk.ibm.com', 
-    //     text: 'This is a test email from IBM - You are Fired!!!'
-    // });
-
-    // socket.on('createMail', (message) => {
-    //     console.log('Email recieved: ', message);
-    // });
-
-    socket.emit('newMessage', {
-        from: 'theServer', 
-        text: "Hi, I'm the server, welcome to the Chat Application!!!", 
-        createdAt: "12345678"
-    });
+  
+    // Handle a new message - basically we want to forward it onto all users...
 
     socket.on('createMessage', (message) => {
         console.log('Hi - new message received: ', message);
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });
     });
 
-
+    // Handle the disconnection.
     socket.on('disconnect', () => {
         console.log('lost connection to client - oh dear!!!!');
     });
