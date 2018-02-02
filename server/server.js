@@ -26,19 +26,13 @@ io.on('connection', (socket) => {
 
     // Handle a new message - basically we want to forward it onto all users...
 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
 
         // Send a message to everyone.
 
         io.emit('newMessage', generateMessage(message.from, message.text));
 
-        // Broadcast example below - this will go to all users apart from the one related to this socket. 
-
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        // });
+        callback('ACK - OK');
 
     });
 
