@@ -11,13 +11,12 @@ socket.on('connect', function() {
 
 // Accept messages from the Server
 socket.on('newMessage', function(message) {
-    // console.log('Message from Server: ', message);
-
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     // Create a list item element (using jquery)
     var li = jQuery('<li></li>');
 
     // Populate it with message details sent from server.
-    li.text(`${message.from}: ${message.text}`);
+    li.text(`${formattedTime} - ${message.from}: ${message.text}`);
 
     // Now render to the screen (append it to the ordered list element called messages.
     jQuery('#messages').append(li);
@@ -74,14 +73,15 @@ locationButton.on('click', function() {
 // Add a listener for new Location Messages
 socket.on('newLocationMessage', function(message) {
 
-    // console.log('newLocationMessage', message);
+    var formattedTime = moment(message.createdAt).format('h:mm a');
+
     // Create a list item element (using jquery)
     var li = jQuery('<li></li>');
 
     // Create an anchor tag
     var a = jQuery('<a target="_blank">My Current Location</a>');
     
-    li.text(`${message.from}: `);
+    li.text(`${formattedTime} - ${message.from}: `);
     li.append(a);
     a.attr('href', message.url);
 
