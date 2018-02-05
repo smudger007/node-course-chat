@@ -11,16 +11,16 @@ socket.on('connect', function() {
 
 // Accept messages from the Server
 socket.on('newMessage', function(message) {
+
     var formattedTime = moment(message.createdAt).format('h:mm a');
-    // Create a list item element (using jquery)
-    var li = jQuery('<li></li>');
+    var template = jQuery('#message-template').html();
+    var html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    });
 
-    // Populate it with message details sent from server.
-    li.text(`${formattedTime} - ${message.from}: ${message.text}`);
-
-    // Now render to the screen (append it to the ordered list element called messages.
-    jQuery('#messages').append(li);
-
+    jQuery('#messages').append(html);
 });
 
 
@@ -73,20 +73,15 @@ locationButton.on('click', function() {
 // Add a listener for new Location Messages
 socket.on('newLocationMessage', function(message) {
 
+    // console.log('URL is ', message);
+
     var formattedTime = moment(message.createdAt).format('h:mm a');
+    var template = jQuery('#message-location-template').html();
+    var html = Mustache.render(template, {
+        url: message.url,
+        from: message.from,
+        createdAt: formattedTime
+    });
 
-    // Create a list item element (using jquery)
-    var li = jQuery('<li></li>');
-
-    // Create an anchor tag
-    var a = jQuery('<a target="_blank">My Current Location</a>');
-    
-    li.text(`${formattedTime} - ${message.from}: `);
-    li.append(a);
-    a.attr('href', message.url);
-
-    // Now render to the screen (append it to the ordered list element called messages.
-    jQuery('#messages').append(li);
-
-
+    jQuery('#messages').append(html);
 });
