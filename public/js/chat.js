@@ -23,8 +23,19 @@ function scrollToBottom() {
 
         
 socket.on('connect', function() {
-    console.log('Connected!');
+    
+    // Grab the search string in the URL (use deparams to conver this to an object)
+    var params = jQuery.deparam(window.location.search);
 
+    // Emit to server - to manage the room join. (name and room should be in params)
+    socket.emit('join', params, function (err) {
+        if (err) {
+            alert(err);
+            window.location.href = '/';    // Revert user to Join Page....
+        } else {
+            console.log('we are OK');
+        }
+    });
 });
 
 
@@ -60,7 +71,6 @@ jQuery("#message-form").on('submit', function(e) {
 
     // Now send message via sociket.io
     socket.emit('createMessage', {
-        from: 'User', 
         text: messageTextbox.val()
     }, function(ack) {
         // Lets remove the contents of the message box if successfully sent.
@@ -94,8 +104,6 @@ locationButton.on('click', function() {
 // Add a listener for new Location Messages
 socket.on('newLocationMessage', function(message) {
 
-    // console.log('URL is ', message);
-
     var formattedTime = moment(message.createdAt).format('h:mm a');
     var template = jQuery('#message-location-template').html();
     var html = Mustache.render(template, {
@@ -108,3 +116,16 @@ socket.on('newLocationMessage', function(message) {
 
     scrollToBottom();
 });
+
+
+
+// Add a listener for user list update
+socket.on('updateUserList', function(users) {
+    var ol = jQuery('<ol></ol>');
+
+    users.forEach(function (user) {
+        ol.append(jQuery('<li></li>').text(user));
+    });
+    jQuery('#users').html(ol);
+});
+
